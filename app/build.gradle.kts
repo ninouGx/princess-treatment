@@ -2,16 +2,19 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
-    namespace = "com.example.princesse_treatment"
-    compileSdk = 34
+    namespace = "com.example.princesstreatment"
+    compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.princesse_treatment"
-        minSdk = 34
-        targetSdk = 34
+        applicationId = "com.example.princesstreatment"
+        minSdk = 31
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -35,28 +38,37 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
-        viewBinding = true
         compose = true
     }
+}
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"
-    }
+dependencies {
 
-    dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    //Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.androidx.room.compiler)
+    //DI
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+}
 
-        implementation(libs.androidx.core.ktx)
-        implementation(libs.androidx.appcompat)
-        implementation(libs.material)
-        implementation(libs.androidx.constraintlayout)
-        implementation(libs.androidx.navigation.fragment.ktx)
-        implementation(libs.androidx.navigation.ui.ktx)
-        testImplementation(libs.junit)
-        androidTestImplementation(libs.androidx.junit)
-        androidTestImplementation(libs.androidx.espresso.core)
-
-        // Glance
-        implementation(libs.androidx.glance.appwidget)
-        implementation(libs.androidx.glance.material3)
-    }
+kapt {
+    correctErrorTypes = true
 }
