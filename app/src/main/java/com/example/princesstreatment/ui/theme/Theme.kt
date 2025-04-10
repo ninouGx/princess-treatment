@@ -10,36 +10,42 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    background = OledBlack,
+    onBackground = PrincessOnBackground,
+    surface = PrincessSurface,
+    onSurface = PrincessOnSurface,
+    surfaceVariant = PrincessSurfaceVariant,
+    primary = PrincessPrimary,
+    onPrimary = PrincessOnPrimary,
+    secondary = PrincessSecondary,
+    onSecondary = PrincessOnSecondary,
+    tertiary = PrincessTertiary,
+    onTertiary = PrincessOnTertiary
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    background = PrincessLightBackground,
+    onBackground = PrincessLightOnBackground,
+    surface = PrincessLightSurface,
+    onSurface = PrincessLightOnSurface,
+    surfaceVariant = PrincessLightSurfaceVariant,
+    primary = PrincessLightPrimary,
+    onPrimary = PrincessLightOnPrimary,
+    secondary = PrincessLightSecondary,
+    onSecondary = PrincessLightOnSecondary,
+    tertiary = PrincessLightTertiary,
+    onTertiary = PrincessLightOnTertiary,
 )
 
 @Composable
 fun PrincessTreatmentTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && true -> {
+        dynamicColor -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
