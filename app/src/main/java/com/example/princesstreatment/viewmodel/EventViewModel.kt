@@ -15,7 +15,7 @@ import javax.inject.Inject
 class EventViewModel @Inject constructor(
     private val repository: EventRepository
 ) : ViewModel() {
-    val allEvents = repository.activeEvents.stateIn(
+    val allEvents = repository.eventListFlow.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         emptyList()
@@ -72,9 +72,27 @@ class EventViewModel @Inject constructor(
         }
     }
 
+    fun deleteEvent(eventId: Long) {
+        viewModelScope.launch {
+            repository.deleteEvent(eventId)
+        }
+    }
+
     fun markEventCompleted(eventId: Long) {
         viewModelScope.launch {
             repository.markEventCompleted(eventId)
+        }
+    }
+
+    fun activateEvent(eventId: Long) {
+        viewModelScope.launch {
+            repository.activateEvent(eventId)
+        }
+    }
+
+    fun deactivateEvent(eventId: Long) {
+        viewModelScope.launch {
+            repository.deactivateEvent(eventId)
         }
     }
 }

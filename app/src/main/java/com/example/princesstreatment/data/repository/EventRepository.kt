@@ -10,7 +10,7 @@ import javax.inject.Inject
 class EventRepository @Inject constructor(
     private val eventDao: EventDao
 ) {
-    val activeEvents: Flow<List<Event>> = eventDao.getActiveEvents()
+    val eventListFlow: Flow<List<Event>> = eventDao.getAllEvents()
 
     suspend fun addEvent(title: String, description: String, nextOccurrence: LocalDateTime, recurrenceUnit: ChronoUnit, recurrenceInterval: Long): Long {
         val event = Event(
@@ -23,12 +23,10 @@ class EventRepository @Inject constructor(
         return eventDao.insertEvent(event)
     }
 
-    suspend fun deleteEvent(event: Event) {
+    suspend fun deleteEvent(id: Long) {
+        val event = eventDao.getEventById(id)
+            ?: throw IllegalArgumentException("Event with id $id not found")
         eventDao.deleteEvent(event)
-    }
-
-    fun getAllEvents(): Flow<List<Event>> {
-        return eventDao.getAllEvents()
     }
 
     suspend fun getEventById(id: Long): Event? {

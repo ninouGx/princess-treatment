@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -52,7 +51,7 @@ class MainActivity : ComponentActivity() {
 fun EventsScreen(navController: NavController) {
     val viewModel: EventViewModel = hiltViewModel()
     val events = viewModel.allEvents.collectAsState().value
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
@@ -75,25 +74,17 @@ fun EventsScreen(navController: NavController) {
                 val event = events[index]
                 EventItem(
                     event = event,
-                    onMarkCompleted = { viewModel.markEventCompleted(event.id) }
+                    onMarkCompleted = { viewModel.markEventCompleted(event.id) },
+                    onToggleActive = {
+                        if (event.isActive) {
+                            viewModel.deactivateEvent(event.id)
+                        } else{
+                            viewModel.activateEvent(event.id)
+                        }
+                    }
+                    //onDeleted = { viewModel.deleteEvent(event.id) },
                 )
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PrincessTreatmentTheme {
-        Greeting("Android")
     }
 }
