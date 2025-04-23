@@ -84,7 +84,7 @@ fun EventItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Next: ${event.nextOccurrence.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))}",
+                    text = "Next: ${getExactNexTime(event.nextOccurrence)}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(
                         alpha = if (event.isActive) 1f else 0.6f
@@ -138,9 +138,21 @@ private fun getTimeUntil(nextOccurrence: LocalDateTime): String {
     return when {
         duration.isNegative -> "Overdue"
         duration.toDays() > 30 -> "${duration.toDays() / 30} months, ${duration.toDays() % 30} days"
-        duration.toDays() > 0 -> "${duration.toDays()} days"
-        duration.toHours() > 0 -> "${duration.toHours()} hours"
-        duration.toMinutes() > 0 -> "${duration.toMinutes()} minutes"
+        duration.toDays() > 0 -> "${duration.toDays()} days, ${duration.toHours() % 24} hours"
+        duration.toHours() > 0 -> "${duration.toHours()} hours, ${duration.toMinutes() % 60} minutes"
+        duration.toMinutes() > 0 -> "${duration.toMinutes()} minutes, ${duration.seconds % 60} seconds"
         else -> "Just now"
+    }
+}
+
+private fun getExactNexTime(nextOccurrence: LocalDateTime): String {
+    val now = LocalDateTime.now()
+    val duration = Duration.between(now, nextOccurrence)
+    val days = duration.toDays()
+
+    return when {
+        days > 1 && days < 7 -> nextOccurrence.format(DateTimeFormatter.ofPattern("EEE - HH:mm"))
+        days.toInt() == 1 -> "Today - ${nextOccurrence.format(DateTimeFormatter.ofPattern("HH:mm"))}"
+        else -> nextOccurrence.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
     }
 }
