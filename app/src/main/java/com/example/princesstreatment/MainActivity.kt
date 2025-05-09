@@ -96,7 +96,8 @@ fun EventsScreen(navController: NavController) {
                             } else {
                                 viewModel.activateEvent(event.id)
                             }
-                        }
+                        },
+                        onDeleted = { viewModel.deleteEvent(event.id) },
                     )
                 }
             }

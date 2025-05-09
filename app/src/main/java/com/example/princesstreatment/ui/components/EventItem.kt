@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ fun EventItem(
     event: Event,
     onMarkCompleted: () -> Unit,
     onToggleActive: (Boolean) -> Unit,
+    onDeleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -106,11 +108,27 @@ fun EventItem(
             // Action buttons row
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 // Complete button (only enabled if event is active)
                 IconButton(
+                    onClick = onDeleted,
+                    enabled = event.isActive
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.DeleteForever,
+                        contentDescription = "Delete",
+                        tint = if (event.isActive)
+                            MaterialTheme.colorScheme.error
+                        else
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                    )
+                }
+
+                IconButton(
+                    modifier = Modifier.weight(1f, false),
                     onClick = onMarkCompleted,
                     enabled = event.isActive
                 ) {
@@ -136,11 +154,38 @@ private fun getTimeUntil(nextOccurrence: LocalDateTime): String {
     val duration = Duration.between(now, nextOccurrence)
 
     return when {
-        duration.isNegative -> "Overdue"
-        duration.toDays() > 30 -> "${duration.toDays() / 30} months, ${duration.toDays() % 30} days"
-        duration.toDays() > 0 -> "${duration.toDays()} days, ${duration.toHours() % 24} hours"
-        duration.toHours() > 0 -> "${duration.toHours()} hours, ${duration.toMinutes() % 60} minutes"
-        duration.toMinutes() > 0 -> "${duration.toMinutes()} minutes, ${duration.seconds % 60} seconds"
+        duration.isNegative -> "Overdue" // Changed from "overdue" to "Overdue"
+        duration.toDays() > 30 -> {
+            val months = duration.toDays() / 30
+            val remainingDays = duration.toDays() % 30
+            val monthText = if (months == 1L) "month" else "months"
+            val dayText = if (remainingDays == 1L) "day" else "days"
+            "$months $monthText, $remainingDays $dayText"
+        }
+
+        duration.toDays() > 0 -> {
+            val days = duration.toDays()
+            val hours = duration.toHours() % 24
+            val dayText = if (days == 1L) "day" else "days"
+            val hourText = if (hours == 1L) "hour" else "hours"
+            "$days $dayText, $hours $hourText"
+        }
+
+        duration.toHours() > 0 -> {
+            val hours = duration.toHours()
+            val minutes = duration.toMinutes() % 60
+            val hourText = if (hours == 1L) "hour" else "hours"
+            val minuteText = if (minutes == 1L) "minute" else "minutes"
+            "$hours $hourText, $minutes $minuteText"
+        }
+
+        duration.toMinutes() > 0 -> {
+            val minutes = duration.toMinutes()
+            val seconds = duration.seconds % 60
+            val minuteText = if (minutes == 1L) "minute" else "minutes"
+            val secondText = if (seconds == 1L) "second" else "seconds"
+            "$minutes $minuteText, $seconds $secondText"
+        }
         else -> "Just now"
     }
 }
@@ -151,8 +196,8 @@ private fun getExactNexTime(nextOccurrence: LocalDateTime): String {
     val days = duration.toDays()
 
     return when {
-        days > 1 && days < 7 -> nextOccurrence.format(DateTimeFormatter.ofPattern("EEE - HH:mm"))
-        days.toInt() == 1 -> "Today - ${nextOccurrence.format(DateTimeFormatter.ofPattern("HH:mm"))}"
+        days >= 1 && days < 7 -> nextOccurrence.format(DateTimeFormatter.ofPattern("EEE - HH:mm"))
+        days.toInt() == 0 -> "Today - ${nextOccurrence.format(DateTimeFormatter.ofPattern("HH:mm"))}"
         else -> nextOccurrence.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
     }
 }
